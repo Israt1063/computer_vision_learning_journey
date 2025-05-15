@@ -1,0 +1,155 @@
+# 📘 Lecture Notes  
+## **Module 5: Image Classification**
+
+---
+
+### 🖼️ **1. What is Image Classification?**
+
+**Image Classification** is the process of assigning a label or category to an input image based on its visual content.
+
+- **Goal**: Identify the main object or scene in an image.
+- **Example**: Classifying an image as "cat", "dog", "car", etc.
+- **Output**: One or more class labels per image.
+
+---
+
+### ⚙️ **2. Image Classification Pipeline**
+
+1. **Input Image**
+2. **Preprocessing**
+   - Resize
+   - Normalize
+   - Convert to grayscale or RGB
+3. **Feature Extraction**
+   - Traditional: SIFT, HOG
+   - Deep Learning: CNN-based features
+4. **Classification**
+   - Classical: SVM, KNN, Random Forest
+   - Deep: CNN (Convolutional Neural Network)
+5. **Prediction Output**
+
+---
+
+### 🤖 **3. Deep Learning for Image Classification**
+
+Deep learning, especially **Convolutional Neural Networks (CNNs)**, revolutionized image classification.
+
+- **Key CNN Layers**:
+  - **Convolution Layer** – extracts spatial features
+  - **ReLU Activation** – introduces non-linearity
+  - **Pooling Layer** – reduces spatial dimensions
+  - **Fully Connected Layer** – makes final prediction
+
+- **Popular Architectures**:
+  - **LeNet**
+  - **AlexNet**
+  - **VGG16 / VGG19**
+  - **ResNet**
+  - **EfficientNet**
+
+---
+
+### 🧪 **4. Evaluation Metrics**
+
+To measure how well your model performs:
+
+- **Accuracy**: Correct predictions / Total predictions
+- **Precision**: TP / (TP + FP)
+- **Recall**: TP / (TP + FN)
+- **F1 Score**: Harmonic mean of Precision and Recall
+- **Confusion Matrix**: Matrix showing correct and incorrect classifications
+
+---
+
+### 📊 **5. Datasets for Image Classification**
+
+Commonly used datasets:
+
+- **MNIST** – Handwritten digits (0-9)
+- **CIFAR-10 / CIFAR-100** – Colored images across 10/100 classes
+- **ImageNet** – 1,000+ object categories
+- **Fashion-MNIST** – Clothing item images
+- **Medical Imaging Datasets** – e.g., Chest X-ray, Retina, MRI
+
+---
+
+### 🧠 **6. Transfer Learning**
+
+**Transfer Learning** allows reusing a pretrained model (like VGG, ResNet) on a new classification task.
+
+- **Advantages**:
+  - Requires less data
+  - Faster training
+  - Better performance
+- **Common Approaches**:
+  - Freeze base layers, train top layers
+  - Fine-tune entire model
+
+---
+
+### 🚧 **7. Challenges in Image Classification**
+
+- **Overfitting** on small datasets
+- **Class imbalance**
+- **Low-quality or noisy images**
+- **Multiple objects in one image**
+- **Real-world generalization**
+
+---
+
+### ✅ **Summary**
+
+**Image Classification** is a core task in computer vision, enabling machines to understand and categorize images. With deep learning, especially CNNs and transfer learning, classification performance has greatly improved across industries like **healthcare**, **security**, and **autonomous systems**.
+
+
+import os
+import tensorflow as tf
+from tensorflow.keras import layers, models
+from tensorflow.keras.datasets import mnist
+import matplotlib.pyplot as plt
+
+# Create output directory if not exists
+os.makedirs("output", exist_ok=True)
+
+# Load dataset
+(x_train, y_train), (x_test, y_test) = mnist.load_data()
+
+# Normalize and reshape
+x_train = x_train / 255.0
+x_test = x_test / 255.0
+x_train = x_train.reshape(-1, 28, 28, 1)
+x_test = x_test.reshape(-1, 28, 28, 1)
+
+# Build model
+model = models.Sequential([
+    layers.Conv2D(32, (3, 3), activation='relu', input_shape=(28, 28, 1)),
+    layers.MaxPooling2D(2, 2),
+    layers.Conv2D(64, (3, 3), activation='relu'),
+    layers.MaxPooling2D(2, 2),
+    layers.Flatten(),
+    layers.Dense(64, activation='relu'),
+    layers.Dense(10, activation='softmax')
+])
+
+# Compile model
+model.compile(optimizer='adam',
+              loss='sparse_categorical_crossentropy',
+              metrics=['accuracy'])
+
+# Train model
+model.fit(x_train, y_train, epochs=5, validation_data=(x_test, y_test))
+
+# Evaluate
+test_loss, test_acc = model.evaluate(x_test, y_test)
+print(f"Test Accuracy: {test_acc:.2f}")
+
+# Predict and Save Output
+pred = model.predict(x_test)
+plt.imshow(x_test[0].reshape(28, 28), cmap='gray')
+plt.title(f"Predicted: {pred[0].argmax()}, Actual: {y_test[0]}")
+plt.axis('off')
+
+# Save output to file
+output_path = "output/prediction_example.png"
+plt.savefig(output_path)
+print(f"Prediction image saved to: {output_path}")
