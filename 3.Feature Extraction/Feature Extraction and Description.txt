@@ -1,0 +1,185 @@
+
+## 🧠 Module 3 Summary (For Beginners)
+
+### 🔹 1. **Edge Detection Algorithms**
+
+Edge detection হলো এমন একটা প্রসেস যেখানে আমরা ছবি থেকে object এর boundary বা ধারার অংশগুলো বের করি।
+
+#### 📌 Sobel Edge Detection
+
+* ছবি থেকে X ও Y দিকের পার্থক্য বের করে ধারাগুলো খুঁজে বের করে।
+* ব্যবহৃত হয় সাধারণভাবে shape detect করার জন্য।
+
+#### 📌 Canny Edge Detection
+
+* সবচেয়ে জনপ্রিয় ও accurate edge detector।
+* এটি noise কমায়, তারপর ধারার পিক্সেলগুলো detect করে।
+
+---
+
+### 🔹 2. **Corner Detection (Harris Corner Detector)**
+
+* যেসব জায়গায় ধারা দুইদিকে পরিবর্তন হচ্ছে, সেগুলোকে **corner** বলে।
+* Harris Detector corner গুলো বের করে যেখানে object এর কোনা থাকে — যেমন চোখ, নাক, ঘরের কোনা ইত্যাদি।
+
+---
+
+### 🔹 3. **Local Image Features and Feature Matching**
+
+#### 📌 SIFT (Scale-Invariant Feature Transform)
+
+* ছবির মধ্যে এমন কিছু keypoints খুঁজে বের করে যেগুলো স্কেল বা ঘুরানোর পরেও একই রকম থাকে।
+* খুব accurate, কিন্তু computation-heavy।
+
+#### 📌 ORB (Oriented FAST and Rotated BRIEF)
+
+* SIFT এর চেয়ে দ্রুত ও হালকা।
+* Mobile বা রিয়েল-টাইম অ্যাপে ভালো কাজ করে।
+
+---
+
+### 🔹 4. **GLCM (Gray Level Co-occurrence Matrix) Feature Extraction**
+
+* এটি texture detect করে। অর্থাৎ, কোন ছবি মসৃণ, রাফ, patterned কিনা সেটা বলে দিতে পারে।
+* চারটি গুরুত্বপূর্ণ গুণ বের করা হয়:
+
+  * **Contrast** – কতটা পার্থক্য আছে।
+  * **Dissimilarity** – কতটা ভিন্নতা।
+  * **Homogeneity** – কতটা একরকমতা আছে।
+  * **Energy** – texture কতটা রিপিট হয়।
+
+---
+
+## ✅ Summary Tips for Beginners:
+
+* Edge detection দিয়ে object এর boundary বুঝতে পারো।
+* Corner detection দিয়ে shape বা point of interest খুঁজে পাও।
+* SIFT/ORB দিয়ে ছবি compare করা যায়।
+* GLCM texture analyze করতে সাহায্য করে — যেমন X-ray তে cancerous অংশ চেনা।
+
+---
+
+# 📓 Feature Extraction and Description (Jupyter Notebook Style)
+
+# 🔍 Class 4 Topics:
+# 1. Edge Detection (Sobel, Canny)
+# 2. Corner Detection (Harris)
+# 3. Local Features (SIFT, ORB)
+# 4. Texture Analysis (GLCM)
+
+# ======================================
+# 🖼️ Step 1: Load the Image (Grayscale)
+# ======================================
+import cv2
+import numpy as np
+import matplotlib.pyplot as plt
+from skimage.feature import graycomatrix, graycoprops
+import os
+
+# Output folder setup
+os.makedirs("output_images", exist_ok=True)
+
+# Load grayscale image
+img = cv2.imread("input_images/X-ray.jpeg", cv2.IMREAD_GRAYSCALE)
+
+if img is None:
+    raise FileNotFoundError("Image not found. Please check the path.")
+
+plt.imshow(img, cmap='gray')
+plt.title("Original X-ray Image")
+plt.axis("off")
+plt.show()
+
+# ======================================
+# 🔹 Step 2: Sobel Edge Detection
+# ======================================
+# ➤ Sobel edge detection detects gradients in X and Y direction
+# ➤ ksize=3: small kernel helps detect fine edges
+sobel_x = cv2.Sobel(img, cv2.CV_64F, 1, 0, ksize=3)
+sobel_y = cv2.Sobel(img, cv2.CV_64F, 0, 1, ksize=3)
+sobel_edges = cv2.magnitude(sobel_x, sobel_y)
+cv2.imwrite("output_images/sobel_edges.jpeg", sobel_edges)
+
+plt.imshow(sobel_edges, cmap='gray')
+plt.title("Sobel Edges")
+plt.axis("off")
+plt.show()
+
+# ======================================
+# 🔹 Step 3: Canny Edge Detection
+# ======================================
+# ➤ Uses two thresholds to detect strong and weak edges
+edges = cv2.Canny(img, 100, 200)
+cv2.imwrite("output_images/canny_edges.jpeg", edges)
+
+plt.imshow(edges, cmap='gray')
+plt.title("Canny Edges")
+plt.axis("off")
+plt.show()
+
+# ======================================
+# 🔹 Step 4: Harris Corner Detection
+# ======================================
+# ➤ Detects corners based on local neighborhood intensity changes
+gray = np.float32(img)
+corners = cv2.cornerHarris(gray, blockSize=2, ksize=3, k=0.04)
+corners = cv2.dilate(corners, None)
+corner_img = cv2.cvtColor(img, cv2.COLOR_GRAY2BGR)
+corner_img[corners > 0.01 * corners.max()] = [0, 0, 255]
+cv2.imwrite("output_images/harris_corners.jpeg", corner_img)
+
+plt.imshow(corner_img)
+plt.title("Harris Corners")
+plt.axis("off")
+plt.show()
+
+# ======================================
+# 🔹 Step 5: SIFT Feature Detection
+# ======================================
+# ➤ Detects scale and rotation-invariant keypoints
+sift = cv2.SIFT_create()
+keypoints, descriptors = sift.detectAndCompute(img, None)
+sift_img = cv2.drawKeypoints(img, keypoints, None)
+cv2.imwrite("output_images/sift_keypoints.jpeg", sift_img)
+
+plt.imshow(sift_img)
+plt.title("SIFT Keypoints")
+plt.axis("off")
+plt.show()
+
+# ======================================
+# 🔹 Step 6: ORB Feature Detection
+# ======================================
+# ➤ ORB = FAST keypoint + BRIEF descriptor (fast and efficient)
+orb = cv2.ORB_create()
+keypoints_orb, descriptors_orb = orb.detectAndCompute(img, None)
+orb_img = cv2.drawKeypoints(img, keypoints_orb, None)
+cv2.imwrite("output_images/orb_keypoints.jpeg", orb_img)
+
+plt.imshow(orb_img)
+plt.title("ORB Keypoints")
+plt.axis("off")
+plt.show()
+
+# ======================================
+# 🔹 Step 7: GLCM Texture Feature Extraction
+# ======================================
+# ➤ Texture features using Gray Level Co-occurrence Matrix
+# ➤ distances=[1]: nearest neighbor
+# ➤ angles=[0]: horizontal direction
+
+glcm = graycomatrix(img, distances=[1], angles=[0], symmetric=True, normed=True)
+
+contrast = graycoprops(glcm, prop='contrast')[0, 0]
+dissimilarity = graycoprops(glcm, prop='dissimilarity')[0, 0]
+homogeneity = graycoprops(glcm, prop='homogeneity')[0, 0]
+energy = graycoprops(glcm, prop='energy')[0, 0]
+
+# Save features to file
+with open("output_images/glcm_features.txt", "w") as f:
+    f.write(f"Contrast: {contrast:.4f}\n")
+    f.write(f"Dissimilarity: {dissimilarity:.4f}\n")
+    f.write(f"Homogeneity: {homogeneity:.4f}\n")
+    f.write(f"Energy: {energy:.4f}\n")
+
+print("GLCM features saved in output_images/glcm_features.txt")
