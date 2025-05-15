@@ -1,0 +1,88 @@
+# 🧠 Module 7: Image Segmentation
+
+---
+
+### 🔍 **What is Image Segmentation?**
+
+**Image Segmentation** is the process of partitioning an image into multiple regions or segments to simplify its analysis or to locate objects and boundaries.
+
+---
+
+### 📌 **Key Points**
+
+- **Semantic Segmentation**:  
+  Assigns a class label to each pixel (e.g., all pixels of 'cat').
+
+- **Instance Segmentation**:  
+  Identifies separate objects of the same class (e.g., 2 cats → 2 masks).
+
+- **Panoptic Segmentation**:  
+  Combines semantic + instance segmentation.
+
+---
+
+### 🧠 **Techniques Used**
+
+- **Thresholding (Basic)**  
+- **Watershed Algorithm**  
+- **K-means Clustering**  
+- **Deep Learning**:  
+  - U-Net  
+  - Mask R-CNN  
+  - DeepLab  
+
+---
+
+### 🏥 **Applications**
+
+- Tumor/organ detection in medical imaging  
+- Self-driving cars (road/lane segmentation)  
+- Satellite image analysis  
+- Background removal
+
+---
+
+### ⚠️ **Challenges**
+
+- Overlapping objects  
+- Varying lighting conditions  
+- Limited annotated data in medical fields
+
+---
+
+Simple Segmentation Using Thresholding:
+import cv2
+import numpy as np
+import matplotlib.pyplot as plt
+import os
+
+# Create output folder
+os.makedirs("output", exist_ok=True)
+
+# Load grayscale image (e.g., X-ray)
+img = cv2.imread("input_images/X-ray.jpeg", cv2.IMREAD_GRAYSCALE)
+
+if img is None:
+    print("Image not found.")
+else:
+    # Apply binary thresholding
+    _, segmented = cv2.threshold(img, 100, 255, cv2.THRESH_BINARY)
+
+    # Save the segmented output
+    output_path = "output/segmented_X-ray.jpeg"
+    cv2.imwrite(output_path, segmented)
+    print(f"Segmented image saved to: {output_path}")
+
+    # Display original and segmented
+    plt.figure(figsize=(10,4))
+    plt.subplot(1,2,1)
+    plt.imshow(img, cmap='gray')
+    plt.title("Original Image")
+    plt.axis("off")
+
+    plt.subplot(1,2,2)
+    plt.imshow(segmented, cmap='gray')
+    plt.title("Segmented Image")
+    plt.axis("off")
+    plt.tight_layout()
+    plt.show()
