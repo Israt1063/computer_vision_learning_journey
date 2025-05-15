@@ -1,0 +1,84 @@
+# 📘 Lecture Notes  
+
+### 🧠 1. Introduction to Computer Vision
+
+Computer Vision is a field of study that enables machines to interpret and understand the visual world. Using digital images from cameras and videos, and deep learning models, machines can identify and classify objects, and then react to what they "see".
+
+- **Goal**: Automate tasks that the human visual system can do.
+- **Related fields**: Image Processing, Pattern Recognition, Machine Learning.
+- **Evolution**: From handcrafted feature engineering (SIFT, SURF) to deep learning (CNNs, Vision Transformers).
+
+
+
+### 🖼️ 2. Image Processing
+
+Image processing is the foundation of computer vision.
+
+- **Definition**: Performing operations on images to enhance them or extract useful information.
+- **Basic Operations**:
+  - Noise reduction
+  - Contrast enhancement
+  - Thresholding
+  - Edge detection
+  - Morphological operations
+
+Image processing is often used as a **preprocessing step** before computer vision tasks.
+
+
+
+### ⚙️ 3. How Computer Vision Works
+
+**Typical CV pipeline:**
+
+1. **Image Acquisition**: Capture from camera or dataset.
+2. **Preprocessing**: Resize, normalize, denoise.
+3. **Feature Extraction**: Classical (SIFT, HOG) or deep features (CNN).
+4. **Classification / Detection / Segmentation**.
+5. **Post-processing**: Drawing boxes, masks, etc.
+
+Deep learning-based approaches (e.g. CNNs) can learn features directly from data.
+
+
+### 🏥 4. Medical Images for Computer Vision
+
+Medical imaging provides rich data for diagnostics.
+
+- **Types**:
+  - X-ray
+  - MRI
+  - CT scans
+  - Ultrasound
+
+- **Applications**:
+  - Disease detection (e.g., pneumonia, tumors)
+  - Organ segmentation
+  - Anomaly localization
+
+- **Challenges**:
+  - Limited labeled datasets
+  - High variability between patients
+  - Need for expert annotations
+
+
+### 💡 5. Applications of Computer Vision
+
+- Face recognition (e.g., authentication systems)
+- Object detection (e.g., in retail, security)
+- Autonomous driving (e.g., lane detection, pedestrian detection)
+- Industrial automation (e.g., defect detection)
+- Medical diagnostics (e.g., detecting abnormalities in scans)
+
+
+### ⚠️ 6. Challenges in Computer Vision
+
+- Lighting and environmental changes
+- Occlusion and object overlap
+- Real-time processing needs
+- Domain adaptation (training vs real-world performance)
+- Scarcity of annotated medical data
+
+
+
+### ✅ Summary
+
+Computer Vision is a dynamic field transforming how machines perceive and act in the world. From simple image filters to complex neural networks diagnosing diseases, its impact is massive — especially in healthcare, automation, and AI-driven systems.
