@@ -1,0 +1,107 @@
+# 📘 Module 6: Image Recognition
+
+---
+
+### 🔍 **What is Image Recognition?**
+
+**Image Recognition** refers to identifying and classifying objects, scenes, or patterns in an image and assigning meaningful labels.
+
+---
+
+### 📌 **Key Concepts**
+
+- **Image Classification vs. Image Recognition**:  
+  - *Classification* assigns a label to an entire image.  
+  - *Recognition* can involve detecting and labeling multiple objects or features in an image.
+
+- **Applications**:  
+  - Face Recognition  
+  - Optical Character Recognition (OCR)  
+  - Medical Image Diagnosis  
+  - Autonomous Driving  
+
+---
+
+### 🧠 **Techniques Used**
+
+- **Traditional**: Feature Matching (SIFT, SURF)  
+- **Modern**: Deep Learning (CNN, R-CNN, YOLO)
+
+---
+
+### ⚙️ **Pipeline**
+
+1. Input Image  
+2. Preprocessing  
+3. CNN-based Feature Extraction  
+4. Classification or Detection  
+5. Output Prediction / Labels  
+6. Optional: Draw boxes or text on image  
+
+---
+
+### 🧪 **Evaluation Metrics**
+
+- **Accuracy**
+- **Precision / Recall**
+- **Mean Average Precision (for object detection)**
+
+---
+
+
+import os
+import numpy as np
+import matplotlib.pyplot as plt
+import tensorflow as tf
+from tensorflow.keras import layers, models
+from tensorflow.keras.datasets import cifar10
+import cv2
+
+# Prepare output folder
+os.makedirs("output", exist_ok=True)
+
+# Load dataset
+(x_train, y_train), (x_test, y_test) = cifar10.load_data()
+class_names = ['airplane', 'automobile', 'bird', 'cat', 'deer',
+               'dog', 'frog', 'horse', 'ship', 'truck']
+
+# Normalize
+x_train, x_test = x_train / 255.0, x_test / 255.0
+
+# Model architecture
+model = models.Sequential([
+    layers.Conv2D(32, (3,3), activation='relu', input_shape=(32,32,3)),
+    layers.MaxPooling2D(2,2),
+    layers.Conv2D(64, (3,3), activation='relu'),
+    layers.MaxPooling2D(2,2),
+    layers.Flatten(),
+    layers.Dense(64, activation='relu'),
+    layers.Dense(10, activation='softmax')
+])
+
+# Compile
+model.compile(optimizer='adam',
+              loss='sparse_categorical_crossentropy',
+              metrics=['accuracy'])
+
+# Train
+model.fit(x_train, y_train, epochs=5, validation_data=(x_test, y_test))
+
+# Evaluate
+test_loss, test_acc = model.evaluate(x_test, y_test)
+print(f"Test Accuracy: {test_acc:.2f}")
+
+# Predict one
+index = 3  # change index to test other images
+pred = model.predict(np.expand_dims(x_test[index], axis=0))
+predicted_class = class_names[np.argmax(pred)]
+
+# Display and save image
+plt.imshow(x_test[index])
+plt.title(f"Predicted: {predicted_class}, Actual: {class_names[int(y_test[index])]}")
+plt.axis('off')
+
+# Save to file
+output_path = "output/recognized_image.png"
+plt.savefig(output_path)
+print(f"Saved recognized image to: {output_path}")
