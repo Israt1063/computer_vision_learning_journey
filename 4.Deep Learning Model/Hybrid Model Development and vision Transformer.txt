@@ -1,0 +1,137 @@
+Hybrid Model Development & Vision Transformer (ViT) – Beginner Summary
+🔹 1. What is a Hybrid Model?
+A hybrid model in deep learning combines two or more types of models to leverage the strengths of each.
+
+In vision tasks:
+
+We can combine Convolutional Neural Networks (CNN) for feature extraction with Transformer layers for global attention.
+
+Example: Use CNN to extract local features → feed those to a Transformer for understanding global relationships.
+
+This approach performs better than standalone CNNs in some visual tasks because transformers can focus on the entire image context.
+
+
+ 2. What is a Vision Transformer (ViT)?
+Vision Transformer (ViT) is a deep learning architecture that applies the Transformer mechanism (from NLP) to image classification.
+
+🔑 Key Concepts of ViT:
+Instead of using CNNs, it splits an image into patches, flattens them, and treats them like tokens (words in NLP).
+
+Each patch is embedded and passed through Transformer Encoder layers.
+
+A classification token (CLS token) gathers the final representation for classification.
+
+🆚 ViT vs CNN:
+CNN	---------Vision Transformer
+Good at local features	----- Good at long-range dependencies
+Uses convolution  -----	Uses self-attention
+Fixed receptive field  ----	Global receptive field
+
+Code Example: Hybrid CNN + Transformer Model (Jupyter Notebook Style)
+We will:
+
+Load CIFAR-10 images.
+
+Use a CNN for feature extraction.
+
+Feed CNN features into Transformer encoder layers.
+
+Output class predictions.
+
+
+
+
+```python
+# 📦 Import required libraries
+import tensorflow as tf
+from tensorflow.keras import layers, models
+import numpy as np
+import matplotlib.pyplot as plt
+import os
+
+# 📁 Output directory
+os.makedirs("output_images", exist_ok=True)
+
+# 🧲 Load CIFAR-10 dataset
+(x_train, y_train), (x_test, y_test) = tf.keras.datasets.cifar10.load_data()
+
+# Normalize pixel values to [0, 1]
+x_train, x_test = x_train / 255.0, x_test / 255.0
+
+# 🔍 Show sample images
+class_names = ['airplane','automobile','bird','cat','deer','dog','frog','horse','ship','truck']
+plt.figure(figsize=(10,2))
+for i in range(10):
+    plt.subplot(1,10,i+1)
+    plt.xticks([]), plt.yticks([]), plt.grid(False)
+    plt.imshow(x_train[i])
+    plt.xlabel(class_names[y_train[i][0]])
+plt.savefig('output_images/sample_cifar10.png')
+plt.close()
+
+# 🧱 CNN feature extractor block
+def cnn_feature_extractor():
+    model = models.Sequential([
+        layers.Conv2D(32, 3, activation='relu', input_shape=(32,32,3)),  # 32 filters, 3x3 kernel
+        layers.MaxPooling2D(),                                           # Reduce spatial size
+        layers.Conv2D(64, 3, activation='relu'),                         # More filters for complex features
+        layers.MaxPooling2D(),
+        layers.Conv2D(128, 3, activation='relu'),                        # Deeper representation
+        layers.Flatten(),                                               # Flatten for dense layers
+        layers.Dense(256, activation='relu')                            # Final feature vector
+    ])
+    return model
+
+# 🔄 Transformer encoder block
+def transformer_encoder(inputs, num_heads=4, ff_dim=256):
+    x = layers.LayerNormalization(epsilon=1e-6)(inputs)
+    x = layers.MultiHeadAttention(num_heads=num_heads, key_dim=inputs.shape[-1])(x, x)  # Self-attention
+    x = layers.Add()([x, inputs])
+
+    y = layers.LayerNormalization(epsilon=1e-6)(x)
+    y = layers.Dense(ff_dim, activation='relu')(y)          # Feedforward network (hidden layer)
+    y = layers.Dense(inputs.shape[-1])(y)                   # Output shape matches input
+    return layers.Add()([x, y])                             # Residual connection
+
+# 🧠 Build hybrid model
+def build_hybrid_model():
+    input_layer = layers.Input(shape=(32, 32, 3))
+
+    cnn = cnn_feature_extractor()       # CNN for feature extraction
+    features = cnn(input_layer)
+
+    features_expanded = layers.Reshape((1, 256))(features)  # Add sequence dimension
+
+    transformer_out = transformer_encoder(features_expanded)
+    transformer_out = layers.Flatten()(transformer_out)
+
+    output_layer = layers.Dense(10, activation='softmax')(transformer_out)  # Classification output
+
+    return models.Model(inputs=input_layer, outputs=output_layer)
+
+# 📌 Compile and train the hybrid model
+model = build_hybrid_model()
+model.compile(optimizer='adam', loss='sparse_categorical_crossentropy', metrics=['accuracy'])
+
+# Save model architecture
+with open('output_images/hybrid_model_summary.txt', 'w') as f:
+    model.summary(print_fn=lambda x: f.write(x + '\n'))
+
+# 🏋️ Train model
+history = model.fit(x_train, y_train, validation_data=(x_test, y_test), epochs=5)
+
+# 📈 Plot accuracy
+plt.plot(history.history['accuracy'], label='train_accuracy')
+plt.plot(history.history['val_accuracy'], label='val_accuracy')
+plt.title('Hybrid Model Accuracy')
+plt.xlabel('Epoch')
+plt.ylabel('Accuracy')
+plt.legend()
+plt.savefig('output_images/hybrid_model_accuracy.png')
+plt.close()
+
+# 💾 Save model and training history
+model.save('output_images/hybrid_model.h5')
+with open('output_images/hybrid_model_history.txt', 'w') as f:
+    f.write(str(history.history))
+```
