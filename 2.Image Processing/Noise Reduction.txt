@@ -1,0 +1,54 @@
+Noise Reduction Techniques:
+Noise Reduction is a fundamental step to improve the quality of images before applying other computer vision techniques. Below are a few common noise reduction methods:
+
+Gaussian Blur – This technique uses a Gaussian filter to smooth the image, making it effective for removing Gaussian noise.
+
+Median Filter – The median of the pixel values in the neighborhood is taken, making it effective against salt-and-pepper noise.
+
+Bilateral Filter – A more advanced filter that smooths the image while preserving edges.
+
+
+Noise Reduction Techniques:
+Noise Reduction একটি মৌলিক পদক্ষেপ যা অন্য কম্পিউটার ভিশন কৌশল প্রয়োগ করার আগে চিত্রের গুণমান উন্নত করতে সাহায্য করে। নিচে কিছু সাধারণ শব্দ হ্রাস পদ্ধতি দেওয়া হল:
+
+1. **Gaussian Blur** – এই কৌশলটি একটি গাউসিয়ান ফিল্টার ব্যবহার করে চিত্রটি মসৃণ করে, যা গাউসিয়ান শব্দ দূর করতে কার্যকরী।
+
+2. **Median Filter** – এটি আশেপাশের পিক্সেল মানের গড় নিয়ে কাজ করে, যা সল্ট-এন্ড-পেপার শব্দের বিরুদ্ধে কার্যকরী।
+
+3. **Bilateral Filter** – এটি একটি উন্নত ফিল্টার যা চিত্রটি মসৃণ করতে সাহায্য করে, তবে প্রান্তগুলোকে সংরক্ষণ করে।
+
+এগুলি আপনার চিত্র প্রক্রিয়াকরণে ব্যবহার করলে শব্দ হ্রাস পেতে সাহায্য করতে পারে।
+
+import cv2
+
+# 1️⃣ Input Image Load
+img = cv2.imread("input_images/X-ray.jpeg", cv2.IMREAD_GRAYSCALE)
+
+# ✅ Confirm the image has been loaded successfully
+if img is None:
+    print("Image not found.")
+else:
+    print("Image loaded successfully.")
+
+# -------------------------------
+# 2️⃣ Noise Reduction Techniques
+# -------------------------------
+
+# (a) Gaussian Blur
+# (5,5) = 5x5 kernel size. A larger kernel means more smoothing but might blur edges too much.
+gaussian = cv2.GaussianBlur(img, (5, 5), 0)
+# (5, 5) kernel size and 0 for sigma means automatic calculation of standard deviation.
+cv2.imwrite("output_images/gaussian_blur.jpeg", gaussian)
+
+# (b) Median Filter
+# 5 means a 5x5 neighborhood to calculate the median.
+median = cv2.medianBlur(img, 5)
+# Here 5 is the kernel size, and the median value is computed for the surrounding 5x5 pixels.
+cv2.imwrite("output_images/median_blur.jpeg", median)
+
+# (c) Bilateral Filter
+# Parameters: diameter=9, sigmaColor=75, sigmaSpace=75
+# This filter preserves edges while smoothing the image.
+bilateral = cv2.bilateralFilter(img, 9, 75, 75)
+# 9 is the diameter, and the 75 values control the color and spatial smoothing respectively.
+cv2.imwrite("output_images/bilateral_filter.jpeg", bilateral)

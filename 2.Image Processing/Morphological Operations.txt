@@ -1,0 +1,57 @@
+Morphological Operations
+Morphological operations are non-linear image processing techniques that process images based on their shapes. These operations are often used to remove noise, close small holes, or enhance object boundaries.
+
+Erosion - It removes the boundaries of objects.
+
+Dilation - It enlarges the boundaries of objects.
+
+Opening - Erosion followed by dilation, typically used to remove small objects.
+
+Closing - Dilation followed by erosion, used to fill small holes.
+
+
+Morphological Operations
+Morphological অপারেশনগুলি হল নন-লিনিয়ার চিত্র প্রক্রিয়াকরণ কৌশল যা চিত্রগুলি তাদের আকারের ভিত্তিতে প্রক্রিয়া করে। এই অপারেশনগুলি সাধারণত শব্দ দূর করতে, ছোট গর্ত বন্ধ করতে বা বস্তুগুলির সীমানা উন্নত করতে ব্যবহৃত হয়।
+
+1. **Erosion** – এটি বস্তুগুলির সীমানাগুলি সরিয়ে ফেলে।
+
+2. **Dilation** – এটি বস্তুগুলির সীমানাগুলি বৃদ্ধি করে।
+
+3. **Opening** – এটি ইরোশন এবং তারপর ডাইলেশন, সাধারণত ছোট বস্তুগুলি সরাতে ব্যবহৃত হয়।
+
+4. **Closing** – এটি ডাইলেশন এবং তারপর ইরোশন, ছোট গর্তগুলি পূর্ণ করতে ব্যবহৃত হয়।
+
+এই অপারেশনগুলি চিত্রের গুণমান উন্নত করতে বা বিশেষ ধরনের শব্দ এবং গর্তগুলিকে অপসারণ করতে সহায়ক হতে পারে।
+
+
+import cv2
+
+# 1️⃣ Input Image Load
+img = cv2.imread("input_images/X-ray.jpeg", cv2.IMREAD_GRAYSCALE)
+
+# -------------------------------
+# 2️⃣ Morphological Operations
+# -------------------------------
+
+# Kernel: 3x3 rectangle
+kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (3, 3))
+
+# (a) Erosion: Shrinks objects, removes boundaries
+erosion = cv2.erode(img, kernel, iterations=1)
+# Here, kernel is a 3x3 matrix, and one iteration shrinks the white regions.
+cv2.imwrite("output_images/erosion.jpeg", erosion)
+
+# (b) Dilation: Expands objects, adds pixels to boundaries
+dilation = cv2.dilate(img, kernel, iterations=1)
+# One iteration of dilation enlarges the white regions using the 3x3 kernel.
+cv2.imwrite("output_images/dilation.jpeg", dilation)
+
+# (c) Opening = erosion followed by dilation, removes small noise
+opening = cv2.morphologyEx(img, cv2.MORPH_OPEN, kernel)
+# Opening helps remove small noise, kernel (3,3) used for morphological operation.
+cv2.imwrite("output_images/opening.jpeg", opening)
+
+# (d) Closing = dilation followed by erosion, fills small holes
+closing = cv2.morphologyEx(img, cv2.MORPH_CLOSE, kernel)
+# Closing operation fills small holes in the image.
+cv2.imwrite("output_images/closing.jpeg", closing)

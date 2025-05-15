@@ -1,0 +1,45 @@
+Image Augmentation:
+Image Augmentation হল বিভিন্ন ধরনের image transformation, যেমন rotation, flipping, scaling, translation, বা brightness adjustment, যেগুলি ব্যবহার করা হয় data augmentation এর জন্য। এর মূল উদ্দেশ্য হল model এর robustness বাড়ানো এবং overfitting কমানো।
+
+Common Image Augmentation Techniques
+Rotation - ছবিকে কিছু degree ঘুরিয়ে দেওয়া।
+
+Flipping - Horizontal বা Vertical direction এ ছবিটি উল্টে দেওয়া।
+
+Scaling - ছবির আকার বাড়ানো বা ছোট করা।
+
+Translation - ছবিটিকে কিছুটা স্থানান্তর করা।
+
+Brightness Adjustment - ছবির উজ্জ্বলতা বাড়ানো বা কমানো।
+
+
+
+import cv2
+import numpy as np
+
+# 1️⃣ Input Image Load
+img = cv2.imread("input_images/X-ray.jpeg")
+
+# 2️⃣ Image Augmentation Techniques
+# --------------------------
+
+# Rotation
+# Rotate image by 45 degrees (parameter is the angle)
+height, width = img.shape[:2]
+center = (width // 2, height // 2)  # center of the image
+rotation_matrix = cv2.getRotationMatrix2D(center, 45, 1)  # 45 degree rotation
+rotated_img = cv2.warpAffine(img, rotation_matrix, (width, height))
+
+# Flip Image
+# Flip the image horizontally (flipCode = 1 for horizontal flip)
+flipped_img = cv2.flip(img, 1)
+
+# Translate Image
+# Translate image by moving it 100 pixels to the right and 50 pixels down
+M = np.float32([[1, 0, 100], [0, 1, 50]])  # Translation matrix
+translated_img = cv2.warpAffine(img, M, (width, height))
+
+# 3️⃣ Save Augmented Images
+cv2.imwrite("output_images/rotated_X-ray.jpeg", rotated_img)
+cv2.imwrite("output_images/flipped_X-ray.jpeg", flipped_img)
+cv2.imwrite("output_images/translated_X-ray.jpeg", translated_img)
